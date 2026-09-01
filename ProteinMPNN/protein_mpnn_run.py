@@ -424,16 +424,6 @@ def main(args):
                 if print_all:
                     print(f'{num_seqs} sequences of length {total_length} generated in {dt} seconds')
                 
-#             data_dict = {
-#             "coords": X.squeeze().detach(),
-#             "seq": ori_seq,
-#             "mask": mask.detach(),
-#             "emb": mpnn_emb2.squeeze().detach(),
-#             "emb_sup": mpnn_emb1.squeeze().detach()
-#             }
-
-#             filename = '/root/mpnn_cath/valid/' + str(count) + '.pkl'
-#             save_dict_to_pickle(data_dict, filename)
             
             
             
@@ -472,10 +462,10 @@ if __name__ == "__main__":
     argparser.add_argument("--max_length", type=int, default=200000, help="Max sequence length")
     argparser.add_argument("--sampling_temp", type=str, default="0.1", help="A string of temperatures, 0.2 0.25 0.5. Sampling temperature for amino acids. Suggested values 0.1, 0.15, 0.2, 0.25, 0.3. Higher values will lead to more diversity.")
     
-    argparser.add_argument("--out_folder", type=str, default='/root/mpnn_cath/', help="Path to a folder to output sequences, e.g. /home/out/")
+    argparser.add_argument("--out_folder", type=str, default='./outputs/', help="Path to a folder to output sequences, e.g. /home/out/")
     argparser.add_argument("--pdb_path", type=str, default='', help="Path to a single PDB to be designed")
     argparser.add_argument("--pdb_path_chains", type=str, default='', help="Define which chains need to be designed for a single PDB ")
-    argparser.add_argument("--jsonl_path", type=str, default='/root/chain_set_valid.jsonl', help="Path to a folder with parsed pdb into jsonl")
+    argparser.add_argument("--jsonl_path", type=str, default='./chain_set_valid.jsonl', help="Path to a folder with parsed pdb into jsonl")
     argparser.add_argument("--chain_id_jsonl",type=str, default='', help="Path to a dictionary specifying which chains need to be designed and which ones are fixed, if not specied all chains will be designed.")
     argparser.add_argument("--fixed_positions_jsonl", type=str, default='', help="Path to a dictionary with fixed positions")
     argparser.add_argument("--omit_AAs", type=list, default='X', help="Specify which amino acids should be omitted in the generated sequence, e.g. 'AC' would omit alanine and cystine.")

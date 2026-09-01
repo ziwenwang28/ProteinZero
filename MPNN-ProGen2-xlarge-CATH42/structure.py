@@ -225,7 +225,7 @@ class StructureTransformer(nn.Module):
 
     def prepare_structure(self, sample: dict) -> Tuple[torch.Tensor, torch.Tensor]:
         """
-        sample: a dict loaded from e.g. 'ref1.pyd'
+        sample: a dict loaded from an extensionless pickle file, e.g. 'ref1'
         Return:
           emb_pad (max_seqlen, self.width)
           emb_mask (max_seqlen,) with True where valid
@@ -299,17 +299,12 @@ class StructureTransformer(nn.Module):
         """
         structure_paths: a list of 1D Tensors with ASCII codes, for each structure ID.
         E.g. "ref1|..." => [114,101,102,49,124,...].
-        We'll parse that, find the part before '|', load {structure_id}.pyd, then run them.
+        Parse the component before '|', load the extensionless {structure_id} pickle, and encode it.
         Return shape => (B, n_queries, output_dim) or None if a file is missing.
         """
 
-        if not hasattr(self, "_printed_ids"):
-            self._printed_ids = set()
-
         structure_embs = []
         structure_masks = []
-
-        local_rank = int(os.environ.get("LOCAL_RANK", "0"))
 
         for path_tokens in structure_paths:
 
@@ -322,12 +317,6 @@ class StructureTransformer(nn.Module):
                 path_str = path_str[:pipe_idx]
 
             path_str = path_str.strip()
-
-            DEBUG_PRINT = False
-
-            if local_rank == 0 and path_str not in self._printed_ids and DEBUG_PRINT:
-
-                self._printed_ids.add(path_str)
 
             full_path = os.path.join(self.structure_emb_path_prefix, path_str)
             if not os.path.exists(full_path):

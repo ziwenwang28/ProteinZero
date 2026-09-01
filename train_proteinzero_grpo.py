@@ -143,7 +143,7 @@ class ProteinGRPOArguments:
     )
     structure_emb_path_prefix: str = field(
         default=None,
-        metadata={"help": "Prefix dir for structure embedding .pyd files (default: from --cath_version)."},
+        metadata={"help": "Prefix directory for extensionless structure embedding pickle files (default: from --cath_version)."},
     )
     # LoRA configuration
     lora_rank: int = field(default=16, metadata={"help": "LoRA rank"})
@@ -1020,7 +1020,7 @@ def _flush_train_metrics(step: int, output_dir: str):
 # Reward functions
 
 def _minmax_norm(val: float, lo: float, hi: float) -> float:
-    """Min-max normalise *val* to [0, 1].  Returns 0.5 if lo == hi."""
+    """Min-max normalize *val* to [0, 1].  Returns 0.5 if lo == hi."""
     if hi - lo < 1e-12:
         return 0.5
     return (val - lo) / (hi - lo)
@@ -1051,7 +1051,8 @@ def _compute_combined_reward_for_group(
 ) -> list:
     """
     Compute the combined reward score for a group of sequences from the same
-    structure, using the SAME normalisation logic as training reward functions.
+    structure, using the training reward's direction-aware normalization except
+    for the documented ``hi == lo`` convention below.
 
     Args:
         metrics_list: list of tuples — supported shapes:
@@ -1289,7 +1290,7 @@ class ForceExactLengthBatch(LogitsProcessor):
 
     Per-row target lengths support heterogeneous batches.
 
-    Behaviour:
+    Behavior:
       - Before target_len residues: block sentinel "2" and all non-AA tokens.
       - At exactly target_len residues: force sentinel "2".
       - After that: let EOS handling take over.
@@ -1347,11 +1348,10 @@ class ProteinGRPOTrainer(GRPOTrainer):
       1. Exact-length logits processing during generation
       2. Embedding-space diversity penalty in the loss
 
-    ForceExactLength ensures that GRPO-generated sequences have EXACTLY
-    the same length as the native backbone sequence. This is critical for
-    backbone-conditioned protein design — without it, recovery rate is
-    near-zero because position-wise comparison fails on length-mismatched
-    sequences.
+    ForceExactLength ensures that GRPO-generated sequences have exactly
+    the same length as the native backbone sequence. This preserves positional
+    alignment for backbone-conditioned protein design and makes position-wise
+    sequence recovery well-defined.
     """
 
     def __init__(self, *args, alpha_diversity=0.05, force_exact_length=True,
@@ -2510,7 +2510,8 @@ def evaluate_all_metrics(
     metrics are merged once after all local work is complete.
 
     Candidates are selected per structure by the configured combined reward
-    using the same group normalization as training. Selection falls back to
+    using direction-aware group normalization. The documented ``hi == lo``
+    degenerate-group convention differs from training. Selection falls back to
     pLDDT when no objective weights are active.
 
     When force_exact_length=True, uses ForceExactLength logits processor
