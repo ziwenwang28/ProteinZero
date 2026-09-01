@@ -1,0 +1,11 @@
+{
+  "n_queries": 256,
+  "use_structure": true,
+  "tokenizer_class": "iPLMTokenizer",
+  "auto_map": {
+    "AutoTokenizer": [
+      "tokenization_iPLM.iPLMTokenizer",
+      null
+      ]
+  }
+}
