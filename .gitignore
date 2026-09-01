@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.scratch/
+.ipynb_checkpoints/
+grpo_protein_output/
+cath43/
+cath44/
+structure_embeddings_cath4*/
+save/
+*.safetensors
