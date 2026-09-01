@@ -428,46 +428,45 @@ Launch the default configuration from the repository root:
 
 ```bash
 cd "$REPO"
-bash run_grpo_protein.sh
+bash run_proteinzero_grpo.sh
 ```
 
 The first positional argument selects the number of GPUs. It is not an
 environment-variable override:
 
 ```bash
-bash run_grpo_protein.sh 8
+bash run_proteinzero_grpo.sh 8
 ```
 
-The positional default is eight GPUs for a formal run and one GPU when
-`SMOKE=1`.
+The positional default is eight GPUs.
 
 ### Environment-variable overrides
 
-The following table lists commonly used overrides and their defaults for formal and smoke runs:
+The following table lists commonly used overrides and their defaults:
 
-| Variable | Formal default | `SMOKE=1` default |
-|---|---:|---:|
-| `CATH_VERSION` | `4.3` | `4.3` |
-| `TRAIN_SPLIT` | `le100` | `le100` |
-| `NUM_GEN` | `64` | `2` |
-| `VAL_NUM_GEN` | `1` | `1` |
-| `GENERATION_BATCH_SIZE` | `64` | `NUM_GPUS * NUM_GEN` |
-| `GRAD_ACC_STEPS` | integer result of `1024 / NUM_GPUS` | `2` |
-| `NUM_TRAIN_EPOCHS` | `20` | `1` |
-| `MAX_STEPS` | `-1` | `1` |
-| `SAVE_STEPS` | `10` | `1` |
-| `VALIDATE_EVERY_STEPS` | `10` | `0` |
-| `LR` | `1e-5` | `1e-6` |
-| `LORA_RANK` | `16` | `16` |
-| `LORA_ALPHA` | `16` | `16` |
-| `KL_BETA` | `0.1` | `0.1` |
-| `ALPHA_DIV` | `0.05` | `0.05` |
-| `RW_TM` | `1.0` | `1.0` |
-| `RW_DDG` | `1.0` | `1.0` |
-| `SCALE_REWARDS` | `group` | `group` |
-| `RUN_NAME` | generated | generated with a `smoke_` prefix |
-| `RESUME_FROM` | unset | unset |
-| `DRY_RUN` | `0` | `0` |
+| Variable | Default |
+|---|---:|
+| `CATH_VERSION` | `4.3` |
+| `TRAIN_SPLIT` | `le100` |
+| `NUM_GEN` | `64` |
+| `VAL_NUM_GEN` | `1` |
+| `GENERATION_BATCH_SIZE` | `64` |
+| `GRAD_ACC_STEPS` | integer result of `1024 / NUM_GPUS` |
+| `NUM_TRAIN_EPOCHS` | `20` |
+| `MAX_STEPS` | `-1` |
+| `SAVE_STEPS` | `10` |
+| `VALIDATE_EVERY_STEPS` | `10` |
+| `LR` | `1e-5` |
+| `LORA_RANK` | `16` |
+| `LORA_ALPHA` | `16` |
+| `KL_BETA` | `0.1` |
+| `ALPHA_DIV` | `0.05` |
+| `RW_TM` | `1.0` |
+| `RW_DDG` | `1.0` |
+| `SCALE_REWARDS` | `group` |
+| `RUN_NAME` | generated |
+| `RESUME_FROM` | unset |
+| `DRY_RUN` | `0` |
 
 `NUM_GEN` controls the number of GRPO training rollouts per backbone.
 `VAL_NUM_GEN` independently controls the total number of validation sequences
@@ -488,7 +487,7 @@ The launcher validates the following relationships before starting Python:
 Example override:
 
 ```bash
-TRAIN_SPLIT=101-300 NUM_GEN=64 LR=1e-5 bash run_grpo_protein.sh 8
+TRAIN_SPLIT=101-300 NUM_GEN=64 LR=1e-5 bash run_proteinzero_grpo.sh 8
 ```
 
 ### Configuration-only validation
@@ -497,7 +496,7 @@ Set `DRY_RUN=1` to validate launcher arithmetic and configuration without
 starting Python or allocating a training model:
 
 ```bash
-DRY_RUN=1 bash run_grpo_protein.sh 8
+DRY_RUN=1 bash run_proteinzero_grpo.sh 8
 ```
 
 The default configuration has been verified on the `le100` subset. Other
