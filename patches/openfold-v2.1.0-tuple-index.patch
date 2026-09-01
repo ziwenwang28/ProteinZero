@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ziwen Wang <ziwen2@illinois.edu>
+Date: Sun, 30 Aug 2026 00:00:00 +0800
+Subject: [PATCH] OpenFold v2.1.0: use an explicit tuple for advanced indexing
+
+Target: OpenFold commit f434a2786b5a6b39171f358fb3470ad9f4fd2a58.
+Purpose: Preserve multi-axis advanced-indexing semantics across PyTorch versions.
+Project: https://github.com/ziwenwang28/ProteinZero
+---
+diff --git a/openfold/utils/tensor_utils.py b/openfold/utils/tensor_utils.py
+--- a/openfold/utils/tensor_utils.py
++++ b/openfold/utils/tensor_utils.py
+@@ -89,7 +89,7 @@
+     ]
+     remaining_dims[dim - no_batch_dims if dim >= 0 else dim] = inds
+     ranges.extend(remaining_dims)
+-    return data[ranges]
++    return data[tuple(ranges)]
+ 
+ 
+ # With tree_map, a poor man's JAX tree_map

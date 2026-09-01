@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ziwen Wang <ziwen2@illinois.edu>
+Date: Sun, 30 Aug 2026 00:00:00 +0800
+Subject: [PATCH] OpenFold v2.1.0: compile the CUDA extension as C++17
+
+Target: OpenFold commit f434a2786b5a6b39171f358fb3470ad9f4fd2a58.
+Purpose: PyTorch 2.10 CUDA headers require C++17 for host and NVCC compilation.
+Project: https://github.com/ziwenwang28/ProteinZero
+---
+diff --git a/setup.py b/setup.py
+--- a/setup.py
++++ b/setup.py
+@@ -29,7 +29,7 @@
+ ]
+ 
+ extra_cuda_flags = [
+-    '-std=c++14',
++    '-std=c++17',
+     '-maxrregcount=50',
+     '-U__CUDA_NO_HALF_OPERATORS__',
+     '-U__CUDA_NO_HALF_CONVERSIONS__',
+@@ -91,7 +91,7 @@
+             )
+         ],
+         extra_compile_args={
+-            'cxx': ['-O3'] + version_dependent_macros,
++            'cxx': ['-O3', '-std=c++17'] + version_dependent_macros,
+             'nvcc': (
+                 ['-O3', '--use_fast_math'] +
+                 version_dependent_macros +

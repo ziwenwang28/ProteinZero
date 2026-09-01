@@ -1,0 +1,75 @@
+# Install the CUDA build first:
+#   python -m pip install torch==2.10.0 \
+#     --index-url https://download.pytorch.org/whl/cu128
+# The verified runtime reports torch.__version__ == "2.10.0+cu128".
+# importlib.metadata reports "2.10.0" without the local version suffix.
+#
+# TM-align is a required external executable, not a Python package or a
+# binary bundled with this repository. The reward path invokes `TMalign`
+# by name, so it must resolve from PATH.
+# Verified installation:
+#   conda install -c conda-forge -c bioconda tmalign=20220227
+# Verify with:
+#   command -v TMalign && TMalign -h
+# Source-build alternative using the official 2022-04-12 source:
+#   curl -L https://zhanggroup.org/TM-align/TMalign.cpp -o TMalign.cpp
+#   g++ -static -O3 -ffast-math -o TMalign TMalign.cpp -lm
+#   install -m 0755 TMalign /a/directory/on/PATH/TMalign
+# Omit -static on macOS or systems without static libc.
+#
+# ESMFold requires OpenFold, which is not on PyPI and needs a source build.
+# Verified installation path (OpenFold v2.1.0,
+# commit f434a2786b5a6b39171f358fb3470ad9f4fd2a58):
+#   REPO=/absolute/path/to/ProteinZero
+#   git clone https://github.com/aqlaboratory/openfold && cd openfold
+#   git checkout f434a2786b5a6b39171f358fb3470ad9f4fd2a58
+#   patch -p1 < "$REPO/patches/openfold-v2.1.0-cxx17.patch"
+#   patch -p1 < "$REPO/patches/openfold-v2.1.0-tuple-index.patch"
+#   python -m pip install . --no-build-isolation
+#   python -m pip install -r "$REPO/requirements.txt"
+#   ESM_SITE_PACKAGES="$(python -c \
+#     'import esm; from pathlib import Path; \
+#      print(Path(esm.__file__).resolve().parent.parent)')"
+#   patch -p1 -d "$ESM_SITE_PACKAGES" \
+#     < "$REPO/patches/fair-esm-2.0.0-openfold-v2.1-key-remap.patch"
+#
+# pip 26 enables build isolation, but OpenFold setup.py imports torch during
+# its build, so the already-installed CUDA torch must remain visible.
+# fair-esm 2.0.0 references OpenFold revision 4b41059, which is unusable with
+# PyTorch 2.10: its build fails under both C++14/C++17 and its
+# pytorch_lightning imports are incompatible.
+# Reinstalling by the path above was not bitwise identical to the original
+# runtime: on 2guzA, mean pLDDT differed by one float32 ULP and the maximum
+# atom37 coordinate difference was about 2e-05 Angstrom. This is below the
+# 1e-03 Angstrom PDB coordinate grid used before TM-align and therefore does
+# not affect TM-score or its downstream reward.
+# In the original verified runtime, two independent same-GPU seed-42 folds
+# of 2guzA were bitwise identical in mean pLDDT, atom37 coordinates and mask.
+
+torch==2.10.0
+transformers==5.1.0
+trl==0.27.2
+peft==0.18.1
+accelerate==1.12.0
+datasets==4.5.0
+fair-esm==2.0.0
+safetensors==0.7.0
+tokenizers==0.22.2
+numpy==1.26.4
+pandas==2.3.0
+scipy==1.15.3
+biotite==1.2.0
+einops==0.8.2
+tqdm==4.67.1
+omegaconf==2.3.0
+ml-collections==1.1.0
+dm-tree==0.1.9
+biopython==1.86
+# openfold.np.protein imports modelcif; modelcif uses ihm.
+modelcif==1.6
+ihm==2.9
+# Retained because the published ProteinMPNN/training utilities import them.
+# pdbx-mmcif provides the `pdbx` import namespace used by parse_cif_noX.py;
+# it is not used by the GRPO fine-tuning path itself.
+pdbx-mmcif==0.0.2
+python-dateutil==2.9.0.post0

@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ziwen Wang <ziwen2@illinois.edu>
+Date: Sun, 30 Aug 2026 00:00:00 +0800
+Subject: [PATCH] fair-esm 2.0.0: remap ESMFold PointProjection keys
+
+Target: fair-esm v2.0.0, commit 0b59d87ebef95948c735b1f7aad463dc6dfa991b.
+Purpose: Load released ESMFold checkpoints with OpenFold v2.1 PointProjection wrappers.
+Project: https://github.com/ziwenwang28/ProteinZero
+---
+diff --git a/esm/esmfold/v1/pretrained.py b/esm/esmfold/v1/pretrained.py
+--- a/esm/esmfold/v1/pretrained.py
++++ b/esm/esmfold/v1/pretrained.py
+@@ -20,6 +20,38 @@
+     expected_keys = set(model.state_dict().keys())
+     found_keys = set(model_state.keys())
+ 
++    # Remap checkpoint parameter names to the OpenFold v2.1 PointProjection layout.
++    # Earlier layout: linear_q_points is a Linear layer with key ...linear_q_points.weight.
++    # OpenFold v2.1 layout: linear_q_points wraps a Linear layer with key ...linear_q_points.linear.weight.
++    _point_prefixes = (
++        "linear_q_points",
++        "linear_kv_points",
++        "linear_k_points",
++        "linear_v_points",
++    )
++    remapped = {}
++    for key in list(model_state.keys()):
++        new_key = key
++        for pfx in _point_prefixes:
++            # Map ...ipa.linear_q_points.weight to ...ipa.linear_q_points.linear.weight.
++            old_suffix_w = f"{pfx}.weight"
++            old_suffix_b = f"{pfx}.bias"
++            new_suffix_w = f"{pfx}.linear.weight"
++            new_suffix_b = f"{pfx}.linear.bias"
++            if key.endswith(old_suffix_w) and key.replace(old_suffix_w, new_suffix_w) in expected_keys:
++                new_key = key.replace(old_suffix_w, new_suffix_w)
++                break
++            if key.endswith(old_suffix_b) and key.replace(old_suffix_b, new_suffix_b) in expected_keys:
++                new_key = key.replace(old_suffix_b, new_suffix_b)
++                break
++        if new_key != key:
++            remapped[key] = new_key
++    for old_k, new_k in remapped.items():
++        model_state[new_k] = model_state.pop(old_k)
++
++    # Recompute the set of checkpoint keys after remapping.
++    found_keys = set(model_state.keys())
++
+     missing_essential_keys = []
+     for missing_key in expected_keys - found_keys:
+         if not missing_key.startswith("esm."):
