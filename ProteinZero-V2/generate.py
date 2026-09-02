@@ -191,8 +191,8 @@ def parse_arguments() -> argparse.Namespace:
         type=positive_finite_float,
         default=0.1,
         help=(
-            "Sampling temperature. The default is a commonly recommended "
-            "value for ProteinMPNN sequence generation."
+            "Sampling temperature. ProteinMPNN suggests values spanning "
+            "0.1 to 0.3. Default: 0.1."
         ),
     )
     parser.add_argument(

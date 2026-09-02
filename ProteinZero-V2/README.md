@@ -61,7 +61,7 @@ python /path/to/ProteinZero/ProteinZero-V2/generate.py \
 | `--pdb_dir`     | Directory containing input PDB files. Files are read non-recursively in filename order. Required. |
 | `--output`      | Destination path for the tab-separated output file. Required.                                     |
 | `--num_seqs`    | Number of sequences generated per backbone. Default: `8`.                                         |
-| `--temperature` | ProteinMPNN sampling temperature. Default: `0.1`.                                                 |
+| `--temperature` | ProteinMPNN sampling temperature. Suggested values span `0.1`–`0.3`. Default: `0.1`.              |
 | `--device`      | Execution device: `auto`, `cpu`, `cuda`, or `cuda:N`. Default: `auto`.                            |
 | `--seed`        | Random seed for sequence generation. Default: `0`.                                                |
 | `--overwrite`   | Replace the output file if it already exists.                                                     |
