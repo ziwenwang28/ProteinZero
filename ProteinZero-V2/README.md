@@ -90,8 +90,7 @@ python -m pip install torch numpy
 ```
 
 ESMFold, OpenFold, fair-esm, and TM-align are not required for sequence
-generation. They are used only by the ProteinZero V1 training and scoring
-workflow.
+generation with these checkpoints.
 
 ## Planned releases
 

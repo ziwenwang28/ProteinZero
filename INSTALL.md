@@ -468,6 +468,9 @@ The following table lists commonly used overrides and their defaults:
 | `RESUME_FROM` | unset |
 | `DRY_RUN` | `0` |
 
+When `VALIDATE_EVERY_STEPS` is greater than zero, the checkpoint save interval
+is set to the same value, so setting `SAVE_STEPS` alone has no effect.
+
 `NUM_GEN` controls the number of GRPO training rollouts per backbone.
 `VAL_NUM_GEN` independently controls the total number of validation sequences
 per backbone and defaults to one. Validation backbones are distributed across

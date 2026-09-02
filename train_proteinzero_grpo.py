@@ -156,9 +156,9 @@ class ProteinGRPOArguments:
         default=1.0,
         metadata={"help": "Weight for physical ΔΔG reward (lower is better)"},
     )
-    reward_weight_plddt: float = field(default=0.5, metadata={"help": "Weight for pLDDT reward"})
+    reward_weight_plddt: float = field(default=0.0, metadata={"help": "Weight for pLDDT reward"})
     reward_weight_recovery: float = field(default=0.0, metadata={"help": "Weight for recovery reward"})
-    reward_weight_length: float = field(default=2.0, metadata={"help": "Weight for length-match reward"})
+    reward_weight_length: float = field(default=0.0, metadata={"help": "Weight for length-match reward"})
     # The gen_* parameters configure GRPOConfig; eval_* parameters are used only
     # by evaluate_all_metrics and the validation callback.
     gen_temperature: float = field(default=1.0, metadata={"help": "GRPO rollout temperature (→ GRPOConfig.temperature)"})
